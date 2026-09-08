@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d1614" />
+    <title>Monkey-bot | Ollama chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="background-grid" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Monkey-bot home">
+          <span class="brand-mark"><span></span><span></span><span></span></span>
+          <span>MONKEY<span class="brand-accent">-BOT</span></span>
+        </a>
+        <div class="status-pill"><span class="status-dot"></span><span id="connection-status">LOCKED</span></div>
+      </header>
+
+      <section id="lock-screen" class="lock-layout" aria-labelledby="lock-title">
+        <div class="lock-copy">
+          <p class="eyebrow">PRIVATE INFERENCE CONSOLE <span>• 01</span></p>
+          <h1>Give your<br /><em>thoughts</em> a<br />playground.</h1>
+          <p class="intro">A quiet, direct interface for talking with your Ollama models. Choose a model, ask a question, and start a session.</p>
+          <div class="signal-line"><span></span> YOUR SESSION IS ENCRYPTED IN TRANSIT</div>
+        </div>
+        <form id="unlock-form" class="unlock-panel">
+          <div class="panel-top"><span>ACCESS REQUIRED</span><span>07:17:15</span></div>
+          <div class="lock-icon" aria-hidden="true">⌁</div>
+          <h2>Enter the passcode</h2>
+          <p>This space is reserved for your conversations.</p>
+          <label for="site-password">Passcode</label>
+          <div class="input-wrap"><input id="site-password" type="password" inputmode="numeric" autocomplete="off" placeholder="••••••" maxlength="6" required /><span>↗</span></div>
+          <p id="unlock-error" class="form-error" role="alert"></p>
+          <button class="primary-button" type="submit">Unlock console <span>→</span></button>
+          <div class="panel-footer"><span>MONKEY-BOT / PRIVATE</span><span>V 1.0.0</span></div>
+        </form>
+      </section>
+
+      <section id="chat-screen" class="chat-layout is-hidden" aria-labelledby="chat-title">
+        <aside class="sidebar">
+          <div class="sidebar-heading"><span class="eyebrow">CONFIGURATION</span><span class="live-dot"></span></div>
+          <div class="field-group">
+            <label for="model">Model</label>
+            <input id="model" type="text" value="llama3.2" placeholder="llama3.2" />
+          </div>
+          <button id="new-chat" class="secondary-button" type="button"><span>＋</span> New conversation</button>
+          <div class="sidebar-note"><span class="note-icon">i</span><p>Ollama is connected through the server. Your API key stays in the local <strong>.env</strong> file.</p></div>
+          <button id="lock-button" class="lock-button" type="button">Lock console <span>↗</span></button>
+        </aside>
+
+        <div class="chat-main">
+          <div class="chat-heading"><div><p class="eyebrow">ACTIVE SESSION / <span id="model-label">LLAMA3.2</span></p><h1 id="chat-title">Open conversation</h1></div><div class="session-code">SESSION <strong id="session-id">0001</strong></div></div>
+          <div id="messages" class="messages" aria-live="polite">
+            <div class="welcome-message"><span class="welcome-glyph">✳</span><h2>What are we thinking about?</h2><p>Ask anything. Your first message will start the conversation.</p></div>
+          </div>
+          <form id="chat-form" class="composer">
+            <textarea id="prompt" rows="1" placeholder="Write a message..." aria-label="Message for Ollama"></textarea>
+            <div class="composer-bottom"><span class="hint">SHIFT + ENTER FOR NEW LINE</span><button id="send-button" class="send-button" type="submit" aria-label="Send message">↑</button></div>
+          </form>
+          <p class="disclaimer">AI can make mistakes. Check important information.</p>
+        </div>
+      </section>
+      <footer class="site-footer"><span>© 2025 MONKEY-BOT</span><span>BUILT FOR FOCUSED THINKING</span></footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
