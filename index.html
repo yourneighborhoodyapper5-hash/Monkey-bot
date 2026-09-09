@@ -8,7 +8,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <style>
+      :root { --ink: #ecf2e7; --muted: #92a39b; --line: rgba(236, 242, 231, .14); --panel: rgba(19, 31, 28, .9); --bg: #0d1614; --green: #c2f06d; --orange: #f69a65; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; color: var(--ink); background: var(--bg); font-family: "Space Grotesk", sans-serif; }
+      body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle at 72% 30%, rgba(47, 100, 79, .22), transparent 32%), radial-gradient(circle at 10% 90%, rgba(197, 118, 71, .12), transparent 30%); }
+      .background-grid { position: fixed; inset: 0; opacity: .22; pointer-events: none; background-image: linear-gradient(rgba(194,240,109,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(194,240,109,.08) 1px, transparent 1px); background-size: 72px 72px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
+      .shell { position: relative; max-width: 1280px; min-height: 100vh; margin: auto; padding: 0 48px; display: flex; flex-direction: column; }
+      .topbar { height: 98px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+      .brand { display: flex; align-items: center; gap: 13px; color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 700; letter-spacing: .16em; }.brand-accent { color: var(--green); }
+      .brand-mark { width: 25px; height: 25px; display: flex; gap: 3px; align-items: end; }.brand-mark span { width: 6px; border: 1px solid var(--green); display: block; }.brand-mark span:nth-child(1) { height: 13px; }.brand-mark span:nth-child(2) { height: 21px; background: var(--green); }.brand-mark span:nth-child(3) { height: 17px; }
+      .status-pill { color: var(--green); font: 11px "DM Mono", monospace; letter-spacing: .14em; display: flex; gap: 9px; align-items: center; }.status-dot, .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 13px var(--green); }
+      .lock-layout { flex: 1; display: grid; grid-template-columns: 1.15fr .85fr; gap: 10%; align-items: center; padding: 84px 6% 76px; }.eyebrow { color: var(--green); font: 11px "DM Mono", monospace; letter-spacing: .16em; }.eyebrow span { color: var(--muted); }.lock-copy h1 { margin: 25px 0 26px; font-size: clamp(48px, 6vw, 82px); line-height: .95; letter-spacing: -.07em; font-weight: 500; }.lock-copy h1 em { color: var(--orange); font-family: Georgia, serif; font-weight: 400; }.intro { max-width: 360px; color: var(--muted); font-size: 15px; line-height: 1.65; }.signal-line { margin-top: 52px; color: #70837b; font: 10px "DM Mono", monospace; letter-spacing: .1em; }.signal-line span { display: inline-block; width: 28px; height: 1px; margin-right: 12px; vertical-align: middle; background: var(--green); }
+      .unlock-panel { padding: 29px; background: var(--panel); border: 1px solid var(--line); box-shadow: 18px 18px 0 rgba(0,0,0,.12); }.panel-top, .panel-footer { display: flex; justify-content: space-between; color: #6e8279; font: 10px "DM Mono", monospace; letter-spacing: .1em; }.lock-icon { color: var(--green); font-size: 44px; margin: 44px 0 14px; transform: rotate(-30deg); }.unlock-panel h2 { margin: 0; font-size: 26px; font-weight: 500; }.unlock-panel > p:not(.form-error) { color: var(--muted); font-size: 13px; margin: 9px 0 30px; }.unlock-panel label, .field-group label { display: block; color: var(--muted); font: 10px "DM Mono", monospace; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 9px; }.input-wrap { display: flex; align-items: center; border-bottom: 1px solid var(--line); }.input-wrap input { flex: 1; }.input-wrap span { color: var(--green); font-size: 18px; }.unlock-panel input { padding: 10px 0; }.form-error { height: 18px; margin: 9px 0 0; color: var(--orange); font-size: 12px; }
+      input, textarea, select { width: 100%; border: 0; outline: 0; color: var(--ink); background: transparent; font: 14px "Space Grotesk", sans-serif; } input::placeholder, textarea::placeholder { color: #62736c; }.primary-button, .secondary-button { border: 0; cursor: pointer; font: 600 12px "Space Grotesk", sans-serif; }.primary-button { width: 100%; display: flex; padding: 16px 18px; justify-content: space-between; color: #172018; background: var(--green); }.primary-button:hover { background: #d5ff87; }.panel-footer { margin-top: 44px; }
+      .chat-layout { flex: 1; display: grid; grid-template-columns: 260px 1fr; min-height: 650px; padding: 52px 0 55px; }.is-hidden { display: none; }.sidebar { padding: 4px 32px 0 0; border-right: 1px solid var(--line); display: flex; flex-direction: column; }.sidebar-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 44px; }.field-group { margin-bottom: 25px; }.field-group select { padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px; cursor: pointer; }.field-group select:focus { border-color: var(--green); }.secondary-button { margin-top: 6px; padding: 13px 15px; text-align: left; color: var(--ink); background: transparent; border: 1px solid var(--line); }.secondary-button span { color: var(--green); font-size: 18px; vertical-align: -1px; margin-right: 9px; }.sidebar-note { display: flex; gap: 10px; margin-top: auto; color: var(--muted); font-size: 11px; line-height: 1.5; }.note-icon { color: var(--green); border: 1px solid var(--green); width: 15px; height: 15px; display: inline-grid; place-items: center; border-radius: 50%; flex: none; font: 10px Georgia, serif; }.sidebar-note p { margin: 0; }.lock-button { display: flex; justify-content: space-between; color: #71857c; padding: 20px 0 0; margin-top: 25px; border: 0; border-top: 1px solid var(--line); background: transparent; cursor: pointer; text-align: left; font: 10px "DM Mono", monospace; letter-spacing: .1em; }.lock-button span { color: var(--green); font-size: 16px; }
+      .chat-main { padding-left: clamp(30px, 6vw, 78px); display: flex; flex-direction: column; min-width: 0; }.chat-heading { display: flex; justify-content: space-between; align-items: end; padding-bottom: 34px; border-bottom: 1px solid var(--line); }.chat-heading h1 { margin: 12px 0 0; font-size: 30px; font-weight: 500; letter-spacing: -.04em; }.session-code { color: #6e8279; font: 10px "DM Mono", monospace; letter-spacing: .1em; }.session-code strong { color: var(--orange); font-weight: 400; }.messages { flex: 1; overflow: auto; padding: 42px 0; max-height: 490px; scroll-behavior: smooth; }.welcome-message { text-align: center; margin: 82px auto 0; color: var(--muted); }.welcome-glyph { color: var(--orange); font-size: 30px; }.welcome-message h2 { color: var(--ink); margin: 18px 0 8px; font-size: 22px; font-weight: 500; }.welcome-message p { font-size: 13px; }.message { max-width: 750px; margin: 0 0 29px; animation: rise .3s ease both; }.message-role { color: var(--green); font: 10px "DM Mono", monospace; letter-spacing: .12em; margin-bottom: 9px; }.message.user { margin-left: auto; text-align: right; }.message.user .message-role { color: var(--orange); }.message-body { color: #d9e1d8; font-size: 15px; line-height: 1.65; white-space: pre-wrap; }.composer { border: 1px solid var(--line); padding: 16px 18px 12px; background: rgba(19,31,28,.62); }.composer textarea { resize: none; min-height: 28px; max-height: 150px; line-height: 1.5; }.composer-bottom { display: flex; align-items: end; justify-content: space-between; margin-top: 10px; }.hint, .disclaimer { color: #64766e; font: 9px "DM Mono", monospace; letter-spacing: .08em; }.send-button { display: grid; place-items: center; width: 33px; height: 33px; border: 0; color: #172018; background: var(--green); font-size: 20px; cursor: pointer; }.send-button:disabled { opacity: .5; cursor: wait; }.disclaimer { text-align: center; margin: 16px 0 0; }.site-footer { display: flex; justify-content: space-between; padding: 0 0 22px; color: #50625b; font: 9px "DM Mono", monospace; letter-spacing: .1em; }
+      @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+      @media (max-width: 720px) { .shell { padding: 0 20px; }.topbar { height: 76px; }.lock-layout { display: block; padding: 58px 0 65px; }.lock-copy h1 { font-size: 54px; }.signal-line { margin: 35px 0 50px; }.unlock-panel { padding: 24px; }.chat-layout { display: block; padding: 34px 0 45px; }.sidebar { border-right: 0; padding: 0 0 35px; border-bottom: 1px solid var(--line); }.sidebar-heading { margin-bottom: 28px; }.field-group { display: inline-block; width: calc(50% - 9px); margin-right: 12px; vertical-align: top; }.field-group:nth-of-type(3) { margin-right: 0; }.secondary-button { margin-top: 3px; }.sidebar-note { margin-top: 28px; }.chat-main { padding: 34px 0 0; }.chat-heading { align-items: start; }.session-code { margin-top: 4px; }.messages { min-height: 310px; max-height: none; }.welcome-message { margin-top: 72px; }.site-footer { font-size: 8px; } }
+      @media (max-width: 430px) { .field-group { display: block; width: 100%; margin-right: 0; }.chat-heading h1 { font-size: 25px; }.session-code { font-size: 8px; }.hint { font-size: 8px; } }
+    </style>
   </head>
   <body>
     <div class="background-grid" aria-hidden="true"></div>
@@ -46,10 +65,10 @@
           <div class="sidebar-heading"><span class="eyebrow">CONFIGURATION</span><span class="live-dot"></span></div>
           <div class="field-group">
             <label for="model">Model</label>
-            <input id="model" type="text" value="llama3.2" placeholder="llama3.2" />
+            <select id="model" aria-label="Choose an Ollama model" disabled><option>Discovering models...</option></select>
           </div>
           <button id="new-chat" class="secondary-button" type="button"><span>＋</span> New conversation</button>
-          <div class="sidebar-note"><span class="note-icon">i</span><p>Ollama is connected through the server. Your API key stays in the local <strong>.env</strong> file.</p></div>
+          <div class="sidebar-note"><span class="note-icon">i</span><p>Models are detected from the API. Set your endpoint and key in the <strong>API_CONFIG</strong> block in this file.</p></div>
           <button id="lock-button" class="lock-button" type="button">Lock console <span>↗</span></button>
         </aside>
 
@@ -67,6 +86,72 @@
       </section>
       <footer class="site-footer"><span>© 2025 MONKEY-BOT</span><span>BUILT FOR FOCUSED THINKING</span></footer>
     </main>
-    <script src="app.js"></script>
+    <script>
+      // Edit these values before opening this file. A key in browser code is visible to anyone who has the file.
+      const API_CONFIG = {
+        baseUrl: "https://ollama.com/api",
+        apiKey: "2b2c638cca9547438ac654034aae482e.rZvbR2kylyibLT7iLHpRp3kY",
+      };
+      const SITE_PASSWORD = "717115";
+      const unlockForm = document.querySelector("#unlock-form");
+      const lockScreen = document.querySelector("#lock-screen");
+      const chatScreen = document.querySelector("#chat-screen");
+      const passwordInput = document.querySelector("#site-password");
+      const unlockError = document.querySelector("#unlock-error");
+      const status = document.querySelector("#connection-status");
+      const messages = document.querySelector("#messages");
+      const chatForm = document.querySelector("#chat-form");
+      const promptInput = document.querySelector("#prompt");
+      const sendButton = document.querySelector("#send-button");
+      const modelSelect = document.querySelector("#model");
+      let conversation = [];
+
+      function apiUrl(path) { return `${API_CONFIG.baseUrl.replace(/\/$/, "")}/${path}`; }
+      function apiHeaders() { return API_CONFIG.apiKey && !API_CONFIG.apiKey.startsWith("PASTE_") ? { Authorization: `Bearer ${API_CONFIG.apiKey}` } : {}; }
+      function scrollMessages() { messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" }); }
+      function setModelLabel() { document.querySelector("#model-label").textContent = (modelSelect.value || "NO MODEL").toUpperCase(); }
+
+      async function discoverModels() {
+        modelSelect.disabled = true;
+        status.textContent = "CONNECTING";
+        try {
+          const response = await fetch(apiUrl("tags"), { headers: apiHeaders() });
+          if (!response.ok) throw new Error(`Model discovery returned ${response.status}.`);
+          const data = await response.json();
+          const models = (data.models || []).map((model) => model.name || model.model).filter(Boolean);
+          if (!models.length) throw new Error("No models were returned by the API.");
+          const savedModel = sessionStorage.getItem("monkey-bot-model");
+          modelSelect.replaceChildren(...models.map((name) => new Option(name, name)));
+          modelSelect.value = models.includes(savedModel) ? savedModel : models[0];
+          modelSelect.disabled = false;
+          setModelLabel();
+          status.textContent = "READY";
+        } catch (error) {
+          modelSelect.replaceChildren(new Option("API unavailable", ""));
+          modelSelect.disabled = true;
+          status.textContent = "OFFLINE";
+          unlockError.textContent = error.message;
+        }
+      }
+
+      function unlock() { lockScreen.classList.add("is-hidden"); chatScreen.classList.remove("is-hidden"); status.textContent = "CONNECTING"; promptInput.focus(); discoverModels(); }
+      unlockForm.addEventListener("submit", (event) => { event.preventDefault(); if (passwordInput.value === SITE_PASSWORD) unlock(); else { unlockError.textContent = "That passcode does not match."; passwordInput.select(); } });
+      document.querySelector("#lock-button").addEventListener("click", () => { chatScreen.classList.add("is-hidden"); lockScreen.classList.remove("is-hidden"); status.textContent = "LOCKED"; passwordInput.value = ""; passwordInput.focus(); });
+      document.querySelector("#new-chat").addEventListener("click", () => { conversation = []; messages.innerHTML = `<div class="welcome-message"><span class="welcome-glyph">✳</span><h2>What are we thinking about?</h2><p>Ask anything. Your first message will start the conversation.</p></div>`; document.querySelector("#session-id").textContent = String(Date.now()).slice(-4); promptInput.focus(); });
+      modelSelect.addEventListener("change", () => { sessionStorage.setItem("monkey-bot-model", modelSelect.value); setModelLabel(); });
+
+      function addMessage(role, content) { const item = document.createElement("article"); item.className = `message ${role}`; item.innerHTML = `<div class="message-role">${role === "user" ? "YOU" : "OLLAMA"}</div><div class="message-body"></div>`; item.querySelector(".message-body").textContent = content; messages.appendChild(item); scrollMessages(); return item.querySelector(".message-body"); }
+      async function streamReply(bodyElement) {
+        const response = await fetch(apiUrl("chat"), { method: "POST", headers: { "Content-Type": "application/json", ...apiHeaders() }, body: JSON.stringify({ model: modelSelect.value, messages: conversation, stream: true }) });
+        if (!response.ok) throw new Error(`Ollama returned ${response.status}. Check the endpoint, model, and API key.`);
+        if (!response.body) throw new Error("This browser does not support streamed responses.");
+        const reader = response.body.getReader(); const decoder = new TextDecoder(); let pending = "";
+        while (true) { const { value, done } = await reader.read(); pending += decoder.decode(value || new Uint8Array(), { stream: !done }); const lines = pending.split("\n"); pending = lines.pop() || ""; for (const line of lines) { if (!line.trim()) continue; const chunk = JSON.parse(line); bodyElement.textContent += chunk.message?.content || chunk.response || ""; scrollMessages(); } if (done) break; }
+        return bodyElement.textContent;
+      }
+      chatForm.addEventListener("submit", async (event) => { event.preventDefault(); const prompt = promptInput.value.trim(); if (!prompt || sendButton.disabled || modelSelect.disabled) return; sessionStorage.setItem("monkey-bot-model", modelSelect.value); document.querySelector(".welcome-message")?.remove(); promptInput.value = ""; promptInput.style.height = "auto"; conversation.push({ role: "user", content: prompt }); addMessage("user", prompt); const responseBody = addMessage("assistant", ""); sendButton.disabled = true; status.textContent = "THINKING"; try { conversation.push({ role: "assistant", content: await streamReply(responseBody) }); } catch (error) { responseBody.textContent = error.message; responseBody.style.color = "var(--orange)"; conversation.pop(); } finally { sendButton.disabled = false; status.textContent = "READY"; promptInput.focus(); } });
+      promptInput.addEventListener("keydown", (event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); chatForm.requestSubmit(); } });
+      promptInput.addEventListener("input", () => { promptInput.style.height = "auto"; promptInput.style.height = `${Math.min(promptInput.scrollHeight, 150)}px`; });
+    </script>
   </body>
 </html>
