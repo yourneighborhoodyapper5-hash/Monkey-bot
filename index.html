@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-      :root { --ink: #ecf2e7; --muted: #92a39b; --line: rgba(236, 242, 231, .14); --panel: rgba(19, 31, 28, .9); --bg: #0d1614; --green: #c2f06d; --orange: #f69a65; }
+      :root { --ink: #ecf2e7; --muted: #dde7e3; --line: rgba(236, 242, 231, .14); --panel: rgba(19, 31, 28, .9); --bg: #0d1614; --green: #c2f06d; --orange: #f69a65; }
       * { box-sizing: border-box; }
       body { margin: 0; min-width: 320px; color: var(--ink); background: var(--bg); font-family: "Space Grotesk", sans-serif; }
       body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle at 72% 30%, rgba(47, 100, 79, .22), transparent 32%), radial-gradient(circle at 10% 90%, rgba(197, 118, 71, .12), transparent 30%); }
@@ -110,11 +110,13 @@
         </div>
         <aside id="settings-panel" class="settings-panel" aria-hidden="true">
           <div class="settings-heading"><div><p class="eyebrow">WORKSPACE SETTINGS</p><h2>Configure session</h2></div><button id="close-settings" class="close-button" type="button" aria-label="Close settings">Close</button></div>
+          <div class="settings-section"><label for="ollama-endpoint">Ollama endpoint</label><input id="ollama-endpoint" class="number-input" type="url" value="https://ollama.com/api" placeholder="https://ollama.com/api" /><p class="settings-help">Use an Ollama-compatible API endpoint. GitHub Pages needs an endpoint that allows browser requests.</p></div>
+          <div class="settings-section"><label for="ollama-api-key">API key</label><input id="ollama-api-key" class="number-input" type="password" autocomplete="off" placeholder="Enter your Ollama API key" /><p class="settings-help">Stored only in this browser session and sent directly to Ollama.</p></div>
           <div class="settings-section"><label for="settings-model">Model</label><select id="settings-model" disabled><option>Discovering models...</option></select><p class="settings-help">Choose the model used for the next message.</p></div>
           <div class="settings-section"><label for="system-prompt">System prompt</label><textarea id="system-prompt" rows="5">You are a precise, helpful coding assistant. Explain your reasoning clearly and provide working, maintainable solutions.</textarea><p class="settings-help">Sets the assistant role for this conversation.</p></div>
           <div class="settings-section"><label for="temperature">Temperature <span id="temperature-value" class="range-value">0.20</span></label><div class="range-row"><input id="temperature" type="range" min="0" max="1" step="0.05" value="0.2" /></div><div class="temp-labels"><span>Precise</span><span>Creative</span></div></div>
           <div class="settings-section"><label for="max-tokens">Max tokens</label><input id="max-tokens" class="number-input" type="number" min="256" max="32000" step="256" value="4096" /><p class="settings-help">Maximum response length.</p></div>
-          <div class="settings-section"><span class="settings-label">Connection</span><div class="connection-row"><span class="status-dot"></span><span id="settings-connection">Ready</span></div><p class="settings-help">Your API key stays on the local server.</p></div>
+          <div class="settings-section"><span class="settings-label">Connection</span><div class="connection-row"><span class="status-dot"></span><span id="settings-connection">Ready</span></div><p class="settings-help">Requests go directly from this page to Ollama. GitHub Pages does not proxy or store your key.</p></div>
           <div class="settings-actions"><button id="settings-new-chat" class="secondary-button" type="button">New conversation</button><button id="settings-lock" class="lock-button" type="button">Lock console <span>LOCK</span></button></div>
         </aside>
       </section>
@@ -146,6 +148,9 @@
       const temperatureValue = document.querySelector("#temperature-value");
       const maxTokens = document.querySelector("#max-tokens");
       const thinkToggle = document.querySelector("#think-toggle");
+      const ollamaEndpoint = document.querySelector("#ollama-endpoint");
+      const ollamaApiKey = document.querySelector("#ollama-api-key");
+      const DEFAULT_OLLAMA_ENDPOINT = "https://ollama.com/api";
       let activeRequest;
       let thinkingEnabled = false;
       let conversation = [];
@@ -154,12 +159,30 @@
       const messageObserver = new MutationObserver(() => scrollMessages("auto"));
       messageObserver.observe(messages, { childList: true, subtree: true, characterData: true });
       function setModelLabel() { document.querySelector("#model-label").textContent = (modelSelect.value || "NO MODEL").toUpperCase(); }
+      ollamaEndpoint.value = sessionStorage.getItem("monkey-bot-endpoint") || DEFAULT_OLLAMA_ENDPOINT;
+      ollamaApiKey.value = sessionStorage.getItem("monkey-bot-api-key") || "";
+      function getOllamaEndpoint() {
+        const value = ollamaEndpoint.value.trim().replace(/\/+$/, "").replace(/\/(?:chat|tags)$/, "");
+        if (!value) throw new Error("Enter an Ollama endpoint in Settings.");
+        new URL(value);
+        return value;
+      }
+      function getOllamaHeaders() {
+        const headers = { "Content-Type": "application/json" };
+        if (ollamaApiKey.value.trim()) headers.Authorization = `Bearer ${ollamaApiKey.value.trim()}`;
+        return headers;
+      }
+      function saveConnectionSettings() {
+        sessionStorage.setItem("monkey-bot-endpoint", ollamaEndpoint.value.trim());
+        sessionStorage.setItem("monkey-bot-api-key", ollamaApiKey.value.trim());
+      }
 
       async function discoverModels() {
         modelSelect.disabled = true;
         status.textContent = "CONNECTING";
         try {
-          const response = await fetch("/api/tags");
+          saveConnectionSettings();
+          const response = await fetch(`${getOllamaEndpoint()}/tags`, { headers: getOllamaHeaders() });
           if (!response.ok) throw new Error(`Model discovery returned ${response.status}.`);
           const data = await response.json();
           const models = (data.models || []).map((model) => model.name || model.model).filter(Boolean);
@@ -212,6 +235,8 @@
       document.querySelector("#settings-top").addEventListener("click", () => toggleSettings(true));
       thinkToggle.addEventListener("click", () => { thinkingEnabled = !thinkingEnabled; thinkToggle.classList.toggle("is-active", thinkingEnabled); thinkToggle.setAttribute("aria-pressed", String(thinkingEnabled)); });
       temperature.addEventListener("input", () => { temperatureValue.textContent = Number(temperature.value).toFixed(2); });
+      ollamaEndpoint.addEventListener("change", discoverModels);
+      ollamaApiKey.addEventListener("change", discoverModels);
       document.addEventListener("click", (event) => { const chip = event.target.closest(".chip"); if (!chip) return; promptInput.value = chip.dataset.prompt; promptInput.dispatchEvent(new Event("input")); promptInput.focus(); });
 
       function escapeHtml(value) { return value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]); }
@@ -223,7 +248,8 @@
         activeRequest = new AbortController();
         responseBody.classList.add("is-streaming");
         const messagesForModel = systemPrompt.value.trim() ? [{ role: "system", content: systemPrompt.value.trim() }, ...conversation] : conversation;
-        const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, signal: activeRequest.signal, body: JSON.stringify({ model: modelSelect.value, messages: messagesForModel, stream: true, think: thinkingEnabled, options: { temperature: Number(temperature.value), num_predict: Number(maxTokens.value) } }) });
+        saveConnectionSettings();
+        const response = await fetch(`${getOllamaEndpoint()}/chat`, { method: "POST", headers: getOllamaHeaders(), signal: activeRequest.signal, body: JSON.stringify({ model: modelSelect.value, messages: messagesForModel, stream: true, think: thinkingEnabled, options: { temperature: Number(temperature.value), num_predict: Number(maxTokens.value) } }) });
         if (!response.ok) throw new Error(`Ollama returned ${response.status}. Check the endpoint, model, and API key.`);
         if (!response.body) throw new Error("This browser does not support streamed responses.");
         const reader = response.body.getReader();
